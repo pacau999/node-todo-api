@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var Types = mongoose.Types;
 
 var Todo = mongoose.model('Todo',{
 
@@ -20,5 +21,7 @@ var Todo = mongoose.model('Todo',{
  });
  
  module.exports={
-     Todo
+     Todo,
+     Types
+     
  }
