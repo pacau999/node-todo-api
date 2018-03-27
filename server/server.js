@@ -1,7 +1,9 @@
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
-require('newrelic');
+if(process.env.NEW_RELIC_APP_NAME){
+    require('newrelic');
+}
 
 
 var {mongoose} = require('./db/mongoose');
