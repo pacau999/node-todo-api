@@ -9,6 +9,7 @@ if(process.env.NEW_RELIC_APP_NAME){
 var {mongoose} = require('./db/mongoose');
 var {Todo, Types} = require('./models/todo');
 var {User} = require('./models/user');
+var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 const port = process.env.PORT || 3000;
@@ -104,6 +105,12 @@ app.post('/users',(req,res)=>{
         return res.status(400).send(e.message);
     })
 });
+
+
+app.get('/users/me',authenticate, (req,res)=>{
+    res.send(req.user);
+});
+
 
 app.listen(port, () =>{
     console.log('Starded on port: ',port);

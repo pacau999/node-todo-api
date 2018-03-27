@@ -35,7 +35,11 @@ var UserSchema = new mongoose.Schema({
         }
     }]
  
-})
+});
+
+//Muda o objeto retornado pela busca no banco de dados quando não se especifica parametros
+//Ex: ao buscar um usuario e retornar o resultado da busca usando apenas o parametro user, é possivel filtrar o que é retornado para que não se retorne detalhes sensiveis do objeto 
+
 UserSchema.methods.toJSON = function(){
     var user=this;
     var userObject = user.toObject();
@@ -43,6 +47,7 @@ UserSchema.methods.toJSON = function(){
 
     return _.pick(userObject,['_id','email']);
 }
+
 UserSchema.methods.generateAuthToken = function (){
     var user = this;
     var access = 'auth';
@@ -53,6 +58,25 @@ UserSchema.methods.generateAuthToken = function (){
         return token;
     });
 }
+
+UserSchema.statics.findByToken = function(token){
+    var User = this;
+    var decoded;
+
+    try{
+        decoded = jwt.verify(token,'abc123');
+    } catch(e){
+        return Promise.reject();
+    }
+
+    return User.findOne({
+        '_id': decoded._id,
+        'tokens.token':token,
+        'tokens.access':'auth'
+
+    });
+};
+
 var User = mongoose.model('User',UserSchema);
 
 
