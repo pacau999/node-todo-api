@@ -78,6 +78,29 @@ UserSchema.statics.findByToken = function(token){
     });
 };
 
+UserSchema.statics.login = function(credentials){
+    var User = this;
+    if(!validator.isEmail(credentials.email) || !typeof(credentials.password)==="string" || credentials.password.length<6){
+        return Promise.reject({"customErrorM":"Invalid Credentials"});
+    }
+    return User.findOne({'email':credentials.email}).then((user)=>{
+        if(!user){
+            return Promise.reject({"customErrorM":"Email not on DB"}); 
+        }
+        
+        return bcrypt.compare(credentials.password,user.password).then((check)=>{
+            if(!check){
+                return Promise.reject({"customErrorM":"Bad Combination"}); 
+            }
+            return user;
+            
+        });
+        
+        
+    });
+    
+}
+
 UserSchema.pre('save', function(next){
     var user = this; 
     if(user.isModified('password')){

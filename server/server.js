@@ -111,6 +111,19 @@ app.get('/users/me',authenticate, (req,res)=>{
     res.send(req.user);
 });
 
+app.post('/users/login', (req,res)=>{
+    var credentials = _.pick(req.body,['email', 'password'])
+    User.login(credentials).then((user)=>{
+        return user.generateAuthToken().then((token)=>{
+            res.header('x-auth',token).send(user);
+        });
+    }).catch((e)=>{
+         if(!e || !e.customErrorM){
+             return res.status(400).send();
+         }
+        res.status(400).send(e.customErrorM);
+    });
+});
 
 app.listen(port, () =>{
     console.log('Starded on port: ',port);
